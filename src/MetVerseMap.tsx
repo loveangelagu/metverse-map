@@ -52,7 +52,10 @@ export function MetVerseMap({
 
   // Load font
   useEffect(() => {
-    loadVT323Font().then(() => setFontReady(true))
+    console.log('[MetVerseMap] Loading font...')
+    loadVT323Font()
+      .then(() => { console.log('[MetVerseMap] Font ready'); setFontReady(true) })
+      .catch(err => { console.warn('[MetVerseMap] Font failed, continuing anyway:', err); setFontReady(true) })
   }, [])
 
   // Measure container width for responsive layout
@@ -65,7 +68,7 @@ export function MetVerseMap({
     })
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [fontReady])
 
   // Measure map container for canvas dimensions
   useEffect(() => {
@@ -73,14 +76,21 @@ export function MetVerseMap({
     if (!el) return
     const measure = () => {
       const w = el.clientWidth
+      console.log('[MetVerseMap] Measuring map container width:', w)
       if (w === 0) return
       setCanvasDims({ w, h: Math.round(w / WORLD_ASPECT_RATIO) + WORLD_TOP_OFFSET })
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
+    // Retry with increasing delays in case layout isn't ready yet
+    const timers = [
+      setTimeout(measure, 50),
+      setTimeout(measure, 150),
+      setTimeout(measure, 500),
+    ]
+    return () => { ro.disconnect(); timers.forEach(clearTimeout) }
+  }, [fontReady])
 
   // Notify ready
   useEffect(() => {

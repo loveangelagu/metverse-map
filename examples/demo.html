@@ -7,59 +7,36 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0d0d1a;
-      color: #e0e0e0;
-      font-family: system-ui, sans-serif;
+      background: #e8e4d8;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
-    h1 {
-      font-size: 1.4rem;
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.05em;
-      color: #00d4aa;
     }
     #map-container {
       width: 100%;
-      max-width: 960px;
-      border-radius: 8px;
-      overflow: hidden;
+      max-width: 480px;
+      margin: 0 auto;
     }
   </style>
 </head>
 <body>
-  <h1>@metverse/map demo</h1>
   <div id="map-container"></div>
 
-  <!-- React (required by the widget) -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-
-  <!-- Widget bundle (build first with: npm run build) -->
+  <!-- Widget bundle (self-contained — build first with: npm run build) -->
   <script src="../dist/widget.global.js"></script>
 
   <script>
-    MetVerseMap.mount(document.getElementById('map-container'), {
-      headerText: 'CANGGU DISTRICT',
-      theme: {
-        primary: '#1a1a2e',
-        accent: '#00d4aa',
-        secondary: '#f0a030',
-        border: '#6a28d9',
-        text: '#e0e0e0',
-        textMuted: '#888',
-      },
-      stats: { members: 247, activeNow: 12, districts: 3 },
-      activities: [
-        { user: '@RyoNomad', action: 'found collab via', target: 'Nomeo' },
-        { user: '@SaraMoves', action: 'matched through', target: 'Padel Island' },
-        { user: '@PixelDev', action: 'joined', target: 'Deus Ex Machina' },
-        { user: '@CocoBean', action: 'hosted meetup at', target: 'The Lawn' },
-      ],
-    })
+    window.onerror = function(msg, src, line, col, err) {
+      document.body.innerHTML = '<pre style="color:red;padding:2rem">' + msg + '\n' + src + ':' + line + '\n' + (err && err.stack || '') + '</pre>'
+    }
+
+    var mount = MetVerseMap.mount || (MetVerseMap.default && MetVerseMap.default.mount)
+    if (!mount) {
+      document.body.innerHTML = '<pre style="color:red;padding:2rem">MetVerseMap.mount not found.\nKeys: ' + Object.keys(MetVerseMap).join(', ') + '</pre>'
+    } else {
+      mount(document.getElementById('map-container'), {
+        headerText: 'CANGGU DISTRICT',
+        stats: { members: 247, activeNow: 12, districts: 3 },
+      })
+    }
   </script>
 </body>
 </html>

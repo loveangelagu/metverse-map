@@ -10,15 +10,21 @@ export default defineConfig([
     sourcemap: true,
     clean: true,
   },
-  // IIFE for Web Component CDN (self-contained)
+  // IIFE for Web Component CDN (self-contained, includes React)
   {
-    entry: { widget: 'src/MetVerseMapElement.ts' },
+    entry: { widget: 'src/widget-entry.ts' },
     format: ['iife'],
     globalName: 'MetVerseMap',
     outDir: 'dist',
-    noExternal: ['pixi.js', 'gsap'],
-    external: ['react', 'react-dom'],
+    noExternal: [/.*/],
     minify: true,
     sourcemap: true,
+    define: {
+      'process.env.NODE_ENV': '"production"',
+    },
+    platform: 'browser',
+    esbuildOptions(options) {
+      options.jsx = 'transform'
+    },
   },
 ])

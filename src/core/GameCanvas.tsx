@@ -66,9 +66,12 @@ export function GameCanvas({ participants, currentUserId, matchIds, onAvatarClic
     let syncInterval: ReturnType<typeof setInterval> | null = null
 
     async function setup() {
+      console.log('[MetVerseMap] GameCanvas setup starting...')
       const PIXI = await import('pixi.js')
+      console.log('[MetVerseMap] PixiJS loaded')
       const gsap = (await import('gsap')).default
       gsapRef = gsap
+      console.log('[MetVerseMap] GSAP loaded')
 
       if (destroyed) return
 
@@ -93,8 +96,10 @@ export function GameCanvas({ participants, currentUserId, matchIds, onAvatarClic
       })
       appReady = true
 
+      console.log('[MetVerseMap] PixiJS app initialized, VIEW_W:', VIEW_W, 'VIEW_H:', VIEW_H)
       if (destroyed) { try { app.destroy(true, { children: true }) } catch {} return }
       containerRef.current?.appendChild(app.canvas)
+      console.log('[MetVerseMap] Canvas appended to DOM')
       // Canvas handles all touch gestures (pinch-to-zoom, pan, tap)
       app.canvas.style.touchAction = 'none'
 
@@ -651,11 +656,13 @@ export function GameCanvas({ participants, currentUserId, matchIds, onAvatarClic
       }
 
       // ── Initial spawn ──
+      console.log('[MetVerseMap] Spawning', participantsRef.current.length, 'avatars')
       const initialIds = new Set<string>()
       for (const participant of participantsRef.current) {
         spawnAvatar(participant)
         initialIds.add(participant.id)
       }
+      console.log('[MetVerseMap] All avatars spawned')
 
       // ── Sync participants (add/remove) every 2s without rebuilding the canvas ──
       let crownAdded = false
@@ -808,7 +815,7 @@ export function GameCanvas({ participants, currentUserId, matchIds, onAvatarClic
       }, 500)
     }
 
-    setup()
+    setup().catch(err => console.error('[MetVerseMap] GameCanvas setup failed:', err))
 
     return () => {
       destroyed = true
